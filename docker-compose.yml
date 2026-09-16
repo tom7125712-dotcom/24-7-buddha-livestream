@@ -1,0 +1,13 @@
+services:
+  livestream:
+    build: .
+    env_file: .env
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 45s
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/ffmpeg-heartbeat && test $$(($$(date +%s) - $$(cat /tmp/ffmpeg-heartbeat))) -lt 90"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s

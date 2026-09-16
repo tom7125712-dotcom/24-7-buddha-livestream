@@ -1,0 +1,25 @@
+name: Deploy 24/7 livestream
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write private runtime configuration
+        shell: bash
+        env:
+          RTMP_URL: ${{ secrets.RTMP_URL }}
+          STREAM_KEY: ${{ secrets.STREAM_KEY }}
+          FULL_RTMP_URL: ${{ secrets.FULL_RTMP_URL }}
+        run: |
+          umask 077
+          printf 'RTMP_URL=%s\nSTREAM_KEY=%s\nFULL_RTMP_URL=%s\n' "$RTMP_URL" "$STREAM_KEY" "$FULL_RTMP_URL" > .env
+          test -n "$FULL_RTMP_URL" || { test -n "$RTMP_URL" && test -n "$STREAM_KEY"; }
+      - name: Start or update stream
+        run: docker compose up -d --build --remove-orphans
