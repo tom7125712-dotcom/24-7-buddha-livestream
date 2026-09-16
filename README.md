@@ -26,6 +26,12 @@ GitHub-hosted Actions 有最長工作時間、排程延遲與中斷風險，不�
 
 在一台已安裝 Docker 與 GitHub self-hosted runner 的 Linux 主機上，從 Actions 執行 **Deploy 24/7 livestream**。工作流程會寫入權限為私有的 `.env`，然後啟動或更新容器；串流金鑰不會寫入 repository 或日誌。
 
+### 不開電腦的 GitHub 自動輪替
+
+`24/7 livestream relay` 適用於不想讓自己的 Mac 持續開機的情況。它在 GitHub-hosted runner 上推流約 285 分鐘，完成後會自行派發下一段；每 5 小時的排程是備援。先在 repository 的 `Settings → Secrets and variables → Actions` 建立 `RTMP_URL` 和 `STREAM_KEY`，再從 `Actions` 手動執行一次工作流程。
+
+GitHub-hosted runner 最長為 6 小時，且新 runner 的啟動時間無法保證，因此這種方式仍可能在接力時產生短暫空檔。它不是零中斷 SLA；若需要保證連續直播，請使用 VPS。
+
 ## 技術設定
 
 - 1920×1080、30 FPS、H.264/AAC、約 3.5 Mbps 視訊 / 192 kbps 音訊
